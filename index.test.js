@@ -17,4 +17,32 @@ describe('./musicians endpoint', () => {
     expect(response.statusCode).toBe(200);
     expect(Array.isArray(responseData)).toBe(true)
   })
+
+  test("should respond with Mick Jagger Data", async () => {
+    const response = await request(app).get("/musicians/1");
+    expect(response.statusCode).toBe(200);
+    const responseData = JSON.parse(response.text);
+    expect(responseData).toEqual(expect.objectContaining({
+      name: 'Mick Jagger',
+      instrument: 'Voice',
+    }));
+  });
+
+  test("should delete Drake from list", async () => {
+    const response = await request(app).delete("/musicians/2");
+    expect(response.statusCode).toBe(200);
+    const responseData = JSON.parse(response.text);
+    expect(responseData).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+            name: 'Mick Jagger',
+            instrument: 'Voice',
+        }),
+        expect.objectContaining({
+            name: 'Jimi Hendrix',
+            instrument: 'Guitar',
+        }),
+      ])
+    );
+  });
 })
