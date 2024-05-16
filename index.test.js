@@ -26,13 +26,34 @@ describe('./musicians endpoint', () => {
   })
 
   test("Testing musicians POST", async () => {
-    const newMusician = { name: "Nandos" };
+    const newMusician = {
+      name: "Bob",
+      instrument: "violent"
+    };
     const res = await request(app)
       .post("/musicians")
       .send(newMusician);
 
     expect(res.body).toEqual(expect.arrayContaining(seedMusician, newMusician))
   })
+
+  test("POST /musician returns error key with array if name field is empty", async () => {
+    const res = await request(app)
+      .post("/musicians")
+      .send({ name: "", instrument: "violent" });
+    expect(res.statusCode).toBe(200);
+    const responseData = JSON.parse(res.text);
+    console.log(responseData)
+    expect(responseData.erros).toEqual([
+      {
+        value: "",
+        msg: "Invalid value",
+        path: "name",
+        type: "field",
+        location: "body"
+      },
+    ]);
+  });
 
   test("Testing musicians PUT", async () => {
     const replaceRestaurant = { name: "Bob Marly" };
